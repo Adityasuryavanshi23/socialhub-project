@@ -1,4 +1,18 @@
+import { useDispatch } from "react-redux";
+import useAuthentication from "../../../hooks/useAuthentication";
+import { logoutUser } from "../../store/slices/loginReducer";
+import { useNavigate } from "react-router-dom";
+
 const Header = () => {
+  const { isuserloggedin, userdata } = useAuthentication();
+  console.log(isuserloggedin, userdata);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handlelogout = () => {
+    dispatch(logoutUser());
+    localStorage.clear();
+    navigate("/login");
+  };
   return (
     <header className="fixed top-0 z-10 mx-auto flex w-full max-w-full items-center justify-between border-b-[1px] border-b-slate-300 bg-[#121212] p-4 text-white lg:px-10">
       <h1 className="text-xl font-extrabold md:text-3xl">Social Media</h1>
@@ -38,6 +52,12 @@ const Header = () => {
           </svg>
           <span className="absolute right-1 top-0 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-green-500 p-1 text-white"></span>
         </span>
+        {isuserloggedin ? (
+          <button onClick={handlelogout} type="button">
+            logout
+          </button>
+        ) : null}
+
         <button className="hidden w-max items-center justify-center border-[1px] border-white p-3 text-center font-bold text-white md:inline-flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"

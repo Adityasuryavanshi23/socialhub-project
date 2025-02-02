@@ -1,7 +1,27 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuthentication from "../../../hooks/useAuthentication";
+import { handleFileUpload } from "../../utils/cloudinary";
 
 const SocialRegister = () => {
+  const { register, handlePostLogin } = useAuthentication();
   const nav = useNavigate();
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData);
+    if (payload?.profilePicture) {
+      const { profilePicture } = payload;
+      const cloudinaryResponse = await handleFileUpload(profilePicture);
+      payload.profilePicture = cloudinaryResponse.secure_url;
+    }
+    try {
+      const resp = await register(payload);
+      handlePostLogin(resp);
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#121212]">
       <header className="fixed top-0 z-10 mx-auto flex w-full max-w-full items-center justify-between border-b-[1px] border-b-slate-300 bg-[#121212] p-4 text-white lg:px-10">
@@ -25,9 +45,17 @@ const SocialRegister = () => {
               Before we post, please create your account
             </p>
           </div>
-          <div className="my-14 flex w-full flex-col items-start justify-start gap-4">
+          <form
+            onSubmit={handleRegister}
+            className="my-14 flex w-full flex-col items-start justify-start gap-4"
+          >
             <div className="flex w-full items-center justify-center">
-              <input id="avatar-input-1" hidden="" type="file" />
+              <input
+                id="avatar-input-1"
+                hidden=""
+                type="file"
+                name="profilePicture"
+              />
               <label
                 htmlFor="avatar-input-1"
                 className="relative flex aspect-square h-24 w-24 cursor-pointer items-center justify-center overflow-visible rounded-full border-4 border-[#ae7aff] p-1"
@@ -72,6 +100,7 @@ const SocialRegister = () => {
               <div className="flex w-full flex-col items-start justify-start gap-2">
                 <label className="text-xs text-slate-200">First name</label>
                 <input
+                  name="firstname"
                   placeholder="Enter a first name..."
                   autoComplete="false"
                   className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
@@ -81,32 +110,19 @@ const SocialRegister = () => {
                 <label className="text-xs text-slate-200">Last name</label>
                 <input
                   placeholder="Enter a last name..."
+                  name="lastname"
                   autoComplete="false"
                   className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
                 />
               </div>
             </div>
-            <div className="flex w-full flex-col items-start justify-start gap-2">
-              <label className="text-xs text-slate-200">Tagline</label>
-              <input
-                placeholder="Enter a profile tagline..."
-                autoComplete="false"
-                className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
-              />
-            </div>
-            <div className="flex w-full flex-col items-start justify-start gap-2">
-              <label className="text-xs text-slate-200">Username</label>
-              <input
-                placeholder="Enter a username..."
-                autoComplete="false"
-                className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
-              />
-            </div>
+
             <div className="flex w-full flex-col items-start justify-start gap-2">
               <label className="text-xs text-slate-200">Email</label>
               <input
                 placeholder="Enter an email..."
                 autoComplete="false"
+                name="email"
                 className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
               />
             </div>
@@ -116,6 +132,7 @@ const SocialRegister = () => {
                 placeholder="Enter a password..."
                 autoComplete="false"
                 type="password"
+                name="password"
                 className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
               />
             </div>
@@ -124,7 +141,6 @@ const SocialRegister = () => {
                 type="checkbox"
                 id="checkbox-2"
                 className="absolute h-6 w-6 cursor-pointer opacity-0 [&:checked+div]:bg-green-500 [&:checked+div_svg]:block"
-                name="checkbox-2"
               />
               <div className="mr-2 flex h-6 w-6 flex-shrink-0 items-center justify-center border-[1px] border-white bg-transparent focus-within:border-white">
                 <svg
@@ -153,16 +169,19 @@ const SocialRegister = () => {
                 </label>
               </div>
             </div>
-            <button className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]">
+            <button
+              type="submit"
+              className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]"
+            >
               Create Account
             </button>
-            <p className="text-sm font-light text-white">
+            <Link to={"/login"} className="text-sm font-light text-white">
               Already registered?{" "}
               <span className="cursor-pointer font-bold hover:underline">
                 Sign in to your account
               </span>
-            </p>
-          </div>
+            </Link>
+          </form>
         </div>
       </div>
     </div>
