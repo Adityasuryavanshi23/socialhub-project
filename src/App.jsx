@@ -34,24 +34,28 @@ const Router = createBrowserRouter([
         ],
       },
       {
+        path: "*", // Catch-all route for any unmatched paths
+        element: <Applayout />,
+      },
+      {
         path: "/postdetial",
         element: <PostDetail />,
+      },
+      {
+        path: "/postdetial",
+        element: <PostDetail />,
+      },
+      {
+        path: "/postlist",
+        element: <PostListing />,
       },
       {
         path: "/login",
         element: <SocialLogin />,
       },
       {
-        path: "/postdetial",
-        element: <PostDetail />,
-      },
-      {
         path: "/register",
         element: <SocialRegister />,
-      },
-      {
-        path: "/postlist",
-        element: <PostListing />,
       },
     ],
   },

@@ -1,7 +1,21 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuthentication from "../../../hooks/useAuthentication";
 
 const SocialLogin = () => {
   const nav = useNavigate();
+  const { login, handlePostLogin } = useAuthentication();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData);
+    // payload will contain your email and password
+    try {
+      const resp = await login(payload);
+      handlePostLogin(resp);
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#121212]">
       <header className="fixed top-0 z-10 mx-auto flex w-full max-w-full items-center justify-between border-b-[1px] border-b-slate-300 bg-[#121212] p-4 text-white lg:px-10">
@@ -23,14 +37,16 @@ const SocialLogin = () => {
               Login to access your account
             </p>
           </div>
-          <div className="my-14 flex w-full flex-col items-start justify-start gap-4">
+          <form
+            onSubmit={handleLogin}
+            className="my-14 flex w-full flex-col items-start justify-start gap-4"
+          >
             <div className="flex w-full flex-col items-start justify-start gap-2">
-              <label className="text-xs text-slate-200">
-                Username or email
-              </label>
+              <label className="text-xs text-slate-200">Email</label>
               <input
                 placeholder="Enter a username or email..."
                 autoComplete="false"
+                name="email"
                 className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
               />
             </div>
@@ -39,6 +55,7 @@ const SocialLogin = () => {
               <input
                 placeholder="Enter a password..."
                 autoComplete="false"
+                name="password"
                 type="password"
                 className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500"
               />
@@ -77,7 +94,10 @@ const SocialLogin = () => {
                 </label>
               </div>
             </div>
-            <button className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]">
+            <button
+              type="submit"
+              className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]"
+            >
               Log in
             </button>
             <div className="mx-auto my-3 flex w-full max-w-md items-center justify-center gap-4 text-white">
@@ -124,13 +144,13 @@ const SocialLogin = () => {
               </svg>
               Login with GitHub
             </button>
-            <p className="text-sm font-light text-white">
+            <Link to={"/register"} className="text-sm font-light text-white">
               Don&#x27;t have an account?{" "}
               <span className="cursor-pointer font-bold hover:underline">
                 Create an account
               </span>
-            </p>
-          </div>
+            </Link>
+          </form>
         </div>
       </div>
     </div>
